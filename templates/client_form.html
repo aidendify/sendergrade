@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}Add client · SenderGrade{% endblock %}
+{% block content %}
+<p class="crumb"><a href="{{ url_for('clients') }}">Clients</a></p>
+<div class="card narrow">
+  <h1>Add client</h1>
+  <form method="post" class="stack">
+    {% include "_client_fields.html" %}
+    <button type="submit">Add client</button>
+  </form>
+</div>
+{% endblock %}

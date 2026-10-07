@@ -1,0 +1,24 @@
+{% macro badge(status) -%}
+<span class="badge badge-{{ status or 'none' }}">{{ status or 'not checked' }}</span>
+{%- endmacro %}
+
+{% macro results(view, show_raw=True) -%}
+<div class="grade-line">Grade {{ badge(view.grade) }}
+  {% if view.lookup_count is not none %}<span class="muted">· SPF DNS lookups: <strong>{{ view.lookup_count }}</strong>/10</span>{% endif %}
+</div>
+<div class="checks">
+{% for c in view.checks %}
+  <div class="check-card">
+    <div class="check-head"><h3>{{ c.label }}</h3>{{ badge(c.status) }}</div>
+    <ul class="findings">
+      {% for f in c.findings %}
+      <li class="f-{{ f.level }}"><strong>{{ f.message }}</strong>{% if f.level != 'pass' and f.hint %}<br><span class="hint">Fix: {{ f.hint }}</span>{% endif %}</li>
+      {% endfor %}
+    </ul>
+    {% if show_raw %}
+      {% if c.raw %}<pre class="raw">{{ c.raw }}</pre>{% else %}<p class="muted small">No record.</p>{% endif %}
+    {% endif %}
+  </div>
+{% endfor %}
+</div>
+{%- endmacro %}

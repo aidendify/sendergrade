@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% from "_macros.html" import badge %}
+{% block title %}Clients · SenderGrade{% endblock %}
+{% block content %}
+<div class="page-head row-between">
+  <div><h1>Clients</h1><p class="lede">{{ rows|length }} client domain(s).</p></div>
+  <div class="actions">
+    <a class="button" href="{{ url_for('client_new') }}">Add client</a>
+    <form method="post" action="{{ url_for('checks_run') }}"><input type="hidden" name="back" value="/clients"><button type="submit" data-busy="Checking…">Run checks now</button></form>
+  </div>
+</div>
+
+<div class="card">
+  <h2>Import CSV</h2>
+  <p class="muted small">Columns: <span class="mono">client_name,domain,dkim_selectors,notes</span>. Existing domains are skipped.</p>
+  <form method="post" action="{{ url_for('clients_import') }}" enctype="multipart/form-data" class="inline">
+    <input type="file" name="file" accept=".csv,text/csv">
+    <button type="submit">Import</button>
+  </form>
+  <form method="post" action="{{ url_for('clients_import') }}" class="inline">
+    <input type="hidden" name="sample" value="1">
+    <button type="submit" class="secondary">Load bundled sample-clients.csv</button>
+  </form>
+  <p class="small"><a href="{{ url_for('export_domains') }}">Export domains.csv</a></p>
+</div>
+
+<div class="card">
+  <table>
+    <thead><tr><th>Client</th><th>Domain</th><th>Selectors</th><th>Grade</th><th>Active</th></tr></thead>
+    <tbody>
+    {% for r in rows %}
+      <tr>
+        <td><a href="{{ url_for('client_detail', client_id=r.id) }}">{{ r.client_name }}</a></td>
+        <td class="mono">{{ r.domain }}</td>
+        <td class="mono small">{{ r.dkim_selectors or 'auto-guess' }}</td>
+        <td>{{ badge(r.grade) }}</td>
+        <td>{{ 'yes' if r.active else 'no' }}</td>
+      </tr>
+    {% else %}
+      <tr><td colspan="5" class="muted">No clients yet.</td></tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

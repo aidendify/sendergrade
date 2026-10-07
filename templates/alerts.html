@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% from "_macros.html" import badge %}
+{% block title %}Alerts · SenderGrade{% endblock %}
+{% block content %}
+<div class="page-head row-between">
+  <div><h1>Alerts</h1>
+    <p class="lede">One alert per changed domain per run. SMTP {{ 'configured' if smtp_configured else 'not configured — alerts are stored here as not_sent_smtp_unconfigured' }}.</p></div>
+  <form method="post" action="{{ url_for('alerts_test') }}"><button type="submit" class="secondary">Send test alert</button></form>
+</div>
+<div class="card">
+  <table>
+    <thead><tr><th>Created (UTC)</th><th>Client</th><th>Domain</th><th>Old → New</th><th>Delivery</th><th>What changed</th></tr></thead>
+    <tbody>
+    {% for a in rows %}
+      <tr>
+        <td class="small">{{ a.created_at }}</td>
+        <td>{% if a.client_id %}<a href="{{ url_for('client_detail', client_id=a.client_id) }}">{{ a.client_name or '(deleted)' }}</a>{% else %}<em>Test</em>{% endif %}</td>
+        <td class="mono small">{{ a.domain }}</td>
+        <td>{% if a.old_grade %}{{ badge(a.old_grade) }} → {{ badge(a.new_grade) }}{% else %}—{% endif %}</td>
+        <td class="mono small">{{ a.delivery_status }}</td>
+        <td><pre class="raw small">{{ a.summary }}</pre></td>
+      </tr>
+    {% else %}
+      <tr><td colspan="6" class="muted">No alerts yet. A client's first check is the baseline; later changes create alerts.</td></tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

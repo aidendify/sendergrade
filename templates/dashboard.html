@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% from "_macros.html" import badge %}
+{% block content %}
+<div class="page-head row-between">
+  <div>
+    <h1>Dashboard</h1>
+    <p class="lede">
+      {% if last_run %}Last run {{ last_run.finished_at }} UTC ({{ last_run.kind }}, {{ last_run.domains_checked }} domains, {{ last_run.changes }} changes).{% else %}No runs yet.{% endif %}
+      Daily check at {{ '%02d' % check_hour }}:00 UTC.
+    </p>
+    {% if last_run and last_run.summary %}<p class="muted small">{{ last_run.summary }}</p>{% endif %}
+  </div>
+  <form method="post" action="{{ url_for('checks_run') }}">
+    <button type="submit" data-busy="Checking…">Run checks now</button>
+  </form>
+</div>
+
+<div class="stats">
+  <div class="stat stat-fail"><span>{{ counts.fail }}</span>fail</div>
+  <div class="stat stat-warn"><span>{{ counts.warn }}</span>warn</div>
+  <div class="stat stat-pass"><span>{{ counts.pass }}</span>pass</div>
+  <div class="stat"><span>{{ counts.unchecked }}</span>not checked</div>
+</div>
+
+<div class="card">
+  <h2>Domains (failing first)</h2>
+  {% if rows %}
+  <table>
+    <thead><tr><th>Client</th><th>Domain</th><th>Grade</th><th>SPF</th><th>DKIM</th><th>DMARC</th><th>MX</th><th>Lookups</th><th>Checked (UTC)</th></tr></thead>
+    <tbody>
+    {% for r in rows if r.active %}
+      <tr>
+        <td><a href="{{ url_for('client_detail', client_id=r.id) }}">{{ r.client_name }}</a></td>
+        <td class="mono">{{ r.domain }}</td>
+        <td>{{ badge(r.grade) }}</td>
+        <td>{{ badge(r.spf_status) }}</td><td>{{ badge(r.dkim_status) }}</td>
+        <td>{{ badge(r.dmarc_status) }}</td><td>{{ badge(r.mx_status) }}</td>
+        <td>{{ r.lookup_count if r.lookup_count is not none else '—' }}</td>
+        <td class="small">{{ r.checked_at or '—' }}</td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <p class="muted">No clients yet. <a href="{{ url_for('clients') }}">Add or import clients</a>.</p>
+  {% endif %}
+</div>
+
+<div class="card">
+  <h2>Recent alerts</h2>
+  {% if recent_alerts %}
+  <ul class="plain">
+    {% for a in recent_alerts %}
+    <li><span class="small muted">{{ a.created_at }}</span> {{ a.domain or 'Test alert' }}
+      {% if a.old_grade %}{{ badge(a.old_grade) }} → {{ badge(a.new_grade) }}{% endif %}
+      <span class="small mono">{{ a.delivery_status }}</span></li>
+    {% endfor %}
+  </ul>
+  <a href="{{ url_for('alerts') }}">All alerts</a>
+  {% else %}<p class="muted">No alerts yet. The first check of a client is a baseline; later changes alert.</p>{% endif %}
+</div>
+{% endblock %}

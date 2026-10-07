@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}Settings · SenderGrade{% endblock %}
+{% block content %}
+<h1>Settings</h1>
+<div class="card narrow-left">
+  <h2>Branding + public check page</h2>
+  <p class="muted small">Used on <span class="mono">/check</span>, <span class="mono">/r/…</span> reports and emails. Blank fields fall back to .env values.</p>
+  <form method="post" class="stack">
+    <label>Agency name <input name="agency_name" value="{{ vals.agency_name }}"></label>
+    <label>Logo URL (https://…) <input name="agency_logo_url" value="{{ vals.agency_logo_url }}"></label>
+    <label>Accent color (hex) <input name="agency_accent_color" value="{{ vals.agency_accent_color }}" placeholder="#1d4e89"></label>
+    <label>Check page headline <input name="check_headline" value="{{ vals.check_headline }}"></label>
+    <label>CTA text <input name="agency_cta_text" value="{{ vals.agency_cta_text }}"></label>
+    <label>CTA URL (booking link) <input name="agency_cta_url" value="{{ vals.agency_cta_url }}" placeholder="https://cal.com/you"></label>
+    <label>Consent checkbox text (blank = no checkbox) <input name="consent_text" value="{{ vals.consent_text }}"></label>
+    <label class="check-row"><input type="checkbox" name="public_check_enabled" {% if vals.public_check_enabled == 'true' %}checked{% endif %}> Public /check page enabled</label>
+    {% if not env_enabled %}<p class="flash flash-error">PUBLIC_CHECK_ENABLED=false in .env — /check returns 404 regardless of this toggle.</p>{% endif %}
+    <button type="submit">Save settings</button>
+  </form>
+</div>
+<div class="card">
+  <h2>Runtime</h2>
+  <ul class="plain small">
+    <li>Daily check: {{ '%02d' % check_hour }}:00 UTC (CHECK_HOUR_UTC), plus a catch-up run at startup if the last run is over 24h old.</li>
+    <li>SMTP: {{ 'configured' if smtp_configured else 'not configured' }} · ALERT_EMAIL: {{ alert_email or 'not set' }}</li>
+    <li>Public check limit: {{ rate }} per IP per hour (PUBLIC_CHECK_RATE_PER_HOUR)</li>
+    <li>Guessed DKIM selectors (selectors.txt): <span class="mono">{{ selectors|join(', ') }}</span></li>
+  </ul>
+</div>
+{% endblock %}

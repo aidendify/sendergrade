@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% from "_macros.html" import badge, results %}
+{% block title %}{{ client.domain }} email authentication report · {{ brand.agency_name }}{% endblock %}
+{% block content %}
+<div class="page-head">
+  <h1>Email authentication report</h1>
+  <p class="lede"><span class="mono">{{ client.domain }}</span> · prepared by {{ brand.agency_name }}</p>
+  {% if view %}<p class="small muted">Last checked {{ view.checked_at }} UTC</p>{% endif %}
+</div>
+<div class="card">
+  {% if view %}{{ results(view) }}{% else %}<p class="muted">This domain hasn't been checked yet.</p>{% endif %}
+</div>
+<div class="card">
+  <h2>Last 10 changes</h2>
+  {% for a in changes %}
+    <div class="alert-row"><span class="small muted">{{ a.created_at }} UTC</span> {{ badge(a.old_grade) }} → {{ badge(a.new_grade) }}
+      <pre class="raw">{{ a.summary }}</pre></div>
+  {% else %}<p class="muted">No changes recorded yet.</p>{% endfor %}
+</div>
+{% endblock %}

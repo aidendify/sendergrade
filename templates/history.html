@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% from "_macros.html" import badge %}
+{% block title %}History · {{ client.domain }}{% endblock %}
+{% block content %}
+<p class="crumb"><a href="{{ url_for('client_detail', client_id=client.id) }}">{{ client.client_name }}</a></p>
+<h1>History · <span class="mono">{{ client.domain }}</span></h1>
+<div class="card">
+  <h2>Changes</h2>
+  {% for a in alerts %}
+    <div class="alert-row"><span class="small muted">{{ a.created_at }} UTC</span> {{ badge(a.old_grade) }} → {{ badge(a.new_grade) }} <span class="small mono">{{ a.delivery_status }}</span>
+      <pre class="raw">{{ a.summary }}</pre></div>
+  {% else %}<p class="muted">No changes recorded.</p>{% endfor %}
+</div>
+<div class="card">
+  <h2>Past checks</h2>
+  <table>
+    <thead><tr><th>Checked (UTC)</th><th>Domain</th><th>Grade</th><th>SPF</th><th>DKIM</th><th>DMARC</th><th>MX</th><th>Lookups</th></tr></thead>
+    <tbody>
+    {% for c in checks %}
+      <tr><td class="small">{{ c.checked_at }}</td><td class="mono small">{{ c.domain }}</td><td>{{ badge(c.grade) }}</td>
+        <td>{{ badge(c.spf_status) }}</td><td>{{ badge(c.dkim_status) }}</td><td>{{ badge(c.dmarc_status) }}</td><td>{{ badge(c.mx_status) }}</td>
+        <td>{{ c.lookup_count if c.lookup_count is not none else '—' }}</td></tr>
+    {% else %}<tr><td colspan="8" class="muted">No checks yet.</td></tr>{% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

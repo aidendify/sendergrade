@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}SenderGrade{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body{% if public %} class="public" style="--accent: {{ brand.agency_accent_color }}"{% endif %}>
+  <header class="top">
+    {% if public %}
+      <span class="brand">
+        {% if brand.agency_logo_url %}<img class="logo" src="{{ brand.agency_logo_url }}" alt="">{% endif %}
+        {{ brand.agency_name }}
+      </span>
+    {% else %}
+      <a class="brand" href="{{ url_for('index') }}">SenderGrade</a>
+      <p class="tagline">SPF · DKIM · DMARC · MX monitor for {{ brand.agency_name }}</p>
+      {% if logged_in %}
+      <nav class="top-nav">
+        <a href="{{ url_for('index') }}">Dashboard</a>
+        <a href="{{ url_for('clients') }}">Clients</a>
+        <a href="{{ url_for('alerts') }}">Alerts</a>
+        <a href="{{ url_for('leads') }}">Leads</a>
+        <a href="{{ url_for('settings') }}">Settings</a>
+        <a href="{{ url_for('logout') }}">Log out</a>
+      </nav>
+      {% endif %}
+    {% endif %}
+  </header>
+
+  <main>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <ul class="flashes">
+          {% for category, message in messages %}
+            <li class="flash flash-{{ category }}">{{ message }}</li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+    {% endwith %}
+    {% block content %}{% endblock %}
+  </main>
+
+  {% if marketing_url %}
+  <footer class="site-footer">
+    <a href="{{ marketing_url }}">Powered by SenderGrade</a>
+  </footer>
+  {% endif %}
+
+  <script>
+    function copyText(text, btn) {
+      navigator.clipboard.writeText(text).then(function () {
+        var old = btn.textContent;
+        btn.textContent = "Copied";
+        setTimeout(function () { btn.textContent = old; }, 1500);
+      });
+    }
+    document.addEventListener("submit", function (e) {
+      var b = e.target.querySelector("button[data-busy]");
+      if (b) { b.disabled = true; b.textContent = b.getAttribute("data-busy"); }
+    });
+  </script>
+</body>
+</html>

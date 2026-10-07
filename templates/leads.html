@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% from "_macros.html" import badge %}
+{% block title %}Leads · SenderGrade{% endblock %}
+{% block content %}
+<div class="page-head row-between">
+  <div><h1>Leads</h1>
+    <p class="lede">From your public <a href="{{ url_for('public_check') }}" target="_blank">/check</a> page{% if not enabled %} (currently disabled){% endif %}.</p></div>
+  <a class="button secondary" href="{{ url_for('export_leads') }}">Export leads.csv</a>
+</div>
+<div class="card">
+  <table>
+    <thead><tr><th>Created (UTC)</th><th>Email</th><th>Name</th><th>Company</th><th>Domain</th><th>Grade</th><th>Consent</th></tr></thead>
+    <tbody>
+    {% for l in rows %}
+      <tr><td class="small">{{ l.created_at }}</td><td>{{ l.email }}</td><td>{{ l.name }}</td><td>{{ l.company }}</td>
+        <td class="mono small">{{ l.domain }}</td><td>{{ badge(l.grade) }}</td><td>{{ 'yes' if l.consent else 'no' }}</td></tr>
+    {% else %}<tr><td colspan="7" class="muted">No leads yet.</td></tr>{% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

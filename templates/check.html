@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% from "_macros.html" import badge, results %}
+{% block title %}Check your domain · {{ brand.agency_name }}{% endblock %}
+{% block content %}
+<div class="page-head">
+  <h1>{{ brand.check_headline }}</h1>
+  <p class="lede">Free SPF, DKIM, DMARC and MX check from {{ brand.agency_name }}.</p>
+</div>
+
+{% if result %}
+<div class="card">
+  <h2>Results for <span class="mono">{{ form.domain }}</span></h2>
+  {{ results(result, show_raw=True) }}
+</div>
+<div class="card cta">
+  <h2>{{ brand.agency_cta_text }}</h2>
+  {% if brand.agency_cta_url %}<a class="button" href="{{ brand.agency_cta_url }}" rel="noopener">{{ brand.agency_cta_text }}</a>
+  {% else %}<p class="muted">{{ brand.agency_name }} will be in touch at {{ form.email }}.</p>{% endif %}
+</div>
+{% endif %}
+
+<div class="card narrow-left">
+  {% if error %}<p class="flash flash-error">{{ error }}</p>{% endif %}
+  <form method="post" class="stack">
+    <label>Your sending domain * <input name="domain" value="{{ form.domain }}" placeholder="yourbrand.com" required></label>
+    <label>Work email * <input type="email" name="email" value="{{ form.email }}" required></label>
+    <label>Name <input name="name" value="{{ form.name }}" maxlength="120"></label>
+    <label>Company <input name="company" value="{{ form.company }}" maxlength="120"></label>
+    <div class="hp" aria-hidden="true"><label>Website <input name="website" tabindex="-1" autocomplete="off"></label></div>
+    {% if brand.consent_text %}
+    <label class="check-row"><input type="checkbox" name="consent" required> {{ brand.consent_text }}</label>
+    {% endif %}
+    <button type="submit" data-busy="Checking DNS…">Check my domain</button>
+  </form>
+</div>
+{% endblock %}
