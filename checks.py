@@ -669,7 +669,7 @@ def check_domain(domain: str, selectors: list[str] | None = None, lookup=None,
         except Exception as exc:  # defensive: a parser bug must not kill the run
             out[name] = {"status": "error", "raw": "", "findings": [finding("error", "dns_error", f"{name.upper()} check error: {exc}")]}
     out["dkim"].setdefault("found", [])
-    out["grade"] = worst(out[c]["status"] for c in C_CHECKS_PLACEHOLDER)
+    out["grade"] = worst(out[c]["status"] for c in CHECKS)
     out["lookup_count"] = out["spf"].get("lookup_count")
     out["elapsed"] = round(time.monotonic() - started, 2)
     return out
