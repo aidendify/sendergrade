@@ -60,17 +60,29 @@ sudo usermod -aG docker "$USER"
 
 Log out and back in (or run `newgrp docker`) so `docker` works without `sudo`.
 
-### 2. Clone, configure, start
+### 2. Unpack, configure, start
+
+Download the release zip, unzip it, and enter the folder:
+
+```bash
+unzip sendergrade.zip
+cd sendergrade   # or the folder name inside the zip
+cp .env.example .env
+nano .env        # set SECRET_KEY, OWNER_PASSWORD, AGENCY_NAME, PUBLIC_BASE_URL
+docker compose up -d --build
+```
+
+Open `http://YOUR_SERVER_IP:8080` and log in with `OWNER_PASSWORD`.
+
+**Optional — install from git instead of the zip:**
 
 ```bash
 git clone https://github.com/aidendify/sendergrade.git
 cd sendergrade
 cp .env.example .env
 nano .env        # set SECRET_KEY, OWNER_PASSWORD, AGENCY_NAME, PUBLIC_BASE_URL
-docker compose up --build -d
+docker compose up -d --build
 ```
-
-Open `http://YOUR_SERVER_IP:8080` and log in with `OWNER_PASSWORD`.
 
 ### 3. Smoke test
 
