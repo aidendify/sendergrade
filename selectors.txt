@@ -1,0 +1,16 @@
+# DKIM selectors SenderGrade probes when guessing (one per line).
+# Auto-guess is best effort: add the client's real selector from their ESP.
+google
+selector1
+selector2
+s1
+s2
+k1
+k2
+k3
+mandrill
+kl
+kl2
+default
+dkim
+mail

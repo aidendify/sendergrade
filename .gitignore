@@ -1,0 +1,12 @@
+.env
+__pycache__/
+*.py[cod]
+*.db
+*.db-wal
+*.db-shm
+*.lock
+data/
+.venv/
+venv/
+.push_*
+.mcp_*
